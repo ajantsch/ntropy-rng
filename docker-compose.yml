@@ -1,0 +1,34 @@
+version: "3"
+services:
+  service:
+    tty: true
+    container_name: ntropy-service
+    build:
+      context: ./service
+    command: ["yarn", "build"]
+    volumes:
+      - ./service:/usr/src/app:cached
+    ports:
+      - 5000:5000
+    environment:
+      - NODE_ENV=local
+      - OPTIMIZED_BUILD=false
+      - PORT=5000
+  client:
+    tty: true
+    container_name: ntropy-client
+    build:
+      context: ./client
+    command: ["yarn", "start"]
+    volumes:
+      - ./client:/usr/src/app:cached
+    ports:
+      - 4040:4040
+      # live reload server port
+      - 35729:35729
+    environment:
+      - NODE_ENV=local
+      - OPTIMIZED_BUILD=false
+      - PORT=4040
+    depends_on:
+      - service
