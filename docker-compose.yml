@@ -7,7 +7,7 @@ services:
       context: ./service
     command: ["yarn", "build"]
     volumes:
-      - ./service:/usr/src/app:cached
+      - ./service:/usr/src/app
     ports:
       - 5000:5000
     environment:
@@ -21,7 +21,7 @@ services:
       context: ./client
     command: ["yarn", "start"]
     volumes:
-      - ./client:/usr/src/app:cached
+      - ./client:/usr/src/app
     ports:
       - 4040:4040
       # live reload server port
