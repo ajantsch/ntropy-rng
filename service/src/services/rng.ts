@@ -1,3 +1,5 @@
+import prando from "prando";
+
 const generate = (
   userHash: string,
   range: { start: number; end: number },
@@ -9,10 +11,11 @@ const generate = (
   const response: {
     draws: number[][];
   } = { draws: [] };
+  const rand = new prando(userHash);
   for (let i = 0; i < draws; i++) {
     let sel: number[] = [];
     for (let y = 0; y < selection; y++) {
-      sel = [...sel, Math.floor(Math.random() * (range.end - range.start + 1) + range.start)];
+      sel = [...sel, rand.next(range.start, range.end + 1)];
     }
     response.draws = [...response.draws, sel];
   }
