@@ -1,3 +1,1 @@
-import random from "./rng";
-
-export { random };
+export { default as rng } from "./rng";

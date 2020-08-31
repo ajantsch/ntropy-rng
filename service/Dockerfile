@@ -1,7 +1,5 @@
 FROM node:14-alpine
 
-RUN apk add --no-cache make gcc g++ python
-
 ARG OPTIMIZED_BUILD=true
 ENV OPTIMIZED_BUILD=${OPTIMIZED_BUILD}
 

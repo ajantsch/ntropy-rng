@@ -24,10 +24,13 @@ const config = {
   entry: "./src/index.ts",
   mode: webpackMode,
   watch: webpackWatch,
+  watchOptions: {
+    ignored: /node_modules/,
+  },
   target: "node",
   devtool: webpackDevtool,
   output: {
-    path: path.resolve(__dirname, "build"),
+    path: path.resolve(__dirname, "dist"),
     filename: "index.js",
     sourceMapFilename: "index.js.map",
   },

@@ -7,9 +7,9 @@
   "private": true,
   "scripts": {
     "build": "webpack",
-    "start": "node build",
-    "start:dev": "env NODE_ENV=local yarn build",
-    "start:watch": "nodemon build",
+    "start": "node dist",
+    "start:dev": "env NODE_ENV=local yarn dist",
+    "start:watch": "nodemon dist",
     "lint": "eslint --ext .ts,.js src",
     "lint:apply": "eslint --ext .ts,.js src --fix"
   },
@@ -28,6 +28,7 @@
     "compression": "^1.7.4",
     "core-js": "^3.6.5",
     "cors": "^2.8.5",
+    "crypto": "^1.0.1",
     "dotenv": "^8.2.0",
     "eslint": "^7.7.0",
     "eslint-config-prettier": "^6.11.0",

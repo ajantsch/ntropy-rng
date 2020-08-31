@@ -1,14 +1,26 @@
+import crypto from "crypto";
 import logger from "./logger";
 
-function randomString(length: number, chars: string): string {
-  let mask = "";
-  if (chars.indexOf("a") > -1) mask += "abcdefghijklmnopqrstuvwxyz";
-  if (chars.indexOf("A") > -1) mask += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  if (chars.indexOf("#") > -1) mask += "0123456789";
-  if (chars.indexOf("!") > -1) mask += "~`!@#$%^&*()_+-={}[]:\";'<>?,./|\\";
-  let result = "";
-  for (let i = length; i > 0; --i) result += mask[Math.floor(Math.random() * mask.length)];
-  return result;
-}
+/**
+ * Hashed a string
+ * @param string
+ * @returns {string}
+ */
+const sha512 = (string: string): string => crypto.createHash("sha512").update(string).digest("hex");
 
-export { logger, randomString };
+/**
+ * Generate a 256 characters string
+ * @returns {string}
+ */
+const generateServerSeed = (): string => crypto.randomBytes(256).toString("hex");
+
+/**
+ * Custom function for concatenating server-seed, client-seed and nonce.
+ * @param serverSeed
+ * @param clientSeed
+ * @param nonce
+ * @returns {string}
+ */
+const combine = (serverSeed: string, clientSeed: string, nonce: string): string => serverSeed + clientSeed + nonce;
+
+export { logger, sha512, generateServerSeed, combine };
