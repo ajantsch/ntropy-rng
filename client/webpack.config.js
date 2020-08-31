@@ -11,6 +11,7 @@ const LiveReloadPlugin = require("webpack-livereload-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
 const { NODE_ENV, OPTIMIZED_BUILD } = process.env;
+
 const webpackDotEnvPath = `./config/.env.${NODE_ENV}`;
 const webpackEnvVars = Dotenv.config({ path: webpackDotEnvPath }).parsed;
 const localEnvironment = NODE_ENV === "local";
@@ -19,9 +20,14 @@ const webpackWatch = localEnvironment && !isOptimized;
 const webpackMode = isOptimized ? "production" : "development";
 const webpackDevtool = isOptimized ? "hidden-source-map" : "cheap-eval-source-map";
 
+console.log(`Webpack building in ${isOptimized ? "optimized" : "non-optimized"} mode`);
+
 const config = {
   mode: webpackMode,
   watch: webpackWatch,
+  watchOptions: {
+    ignored: /node_modules/,
+  },
   entry: path.resolve(__dirname, "src"),
   output: {
     path: path.resolve(__dirname, "dist"),
@@ -77,31 +83,26 @@ const config = {
 };
 
 if (localEnvironment) {
-  config.plugins.push(
-    new ForkTsCheckerWebpackPlugin(),
-    new webpack.HotModuleReplacementPlugin(),
-    new LiveReloadPlugin(),
-    {
-      apply: (compiler) => {
-        let executed = false;
-        compiler.hooks.afterEmit.tap("AfterFirstEmitPlugin", () => {
-          if (!executed) {
-            const cmd = spawn("yarn", ["server:build"], { stdio: "pipe" });
-            cmd.stdout.on("data", function (data) {
-              console.log(colors.green.bold(data.toString()));
-            });
-            cmd.stderr.on("data", function (data) {
-              console.error(colors.red.bold(data.toString()));
-            });
-            cmd.on("exit", function (code) {
-              console.log("AfterFirstEmitPlugin exited with code " + code.toString());
-            });
-            executed = true;
-          }
-        });
-      },
+  config.plugins.push(new ForkTsCheckerWebpackPlugin(), new LiveReloadPlugin(), {
+    apply: (compiler) => {
+      let executed = false;
+      compiler.hooks.afterEmit.tap("AfterFirstEmitPlugin", () => {
+        if (!executed) {
+          const cmd = spawn("yarn", ["server:build"], { stdio: "pipe" });
+          cmd.stdout.on("data", function (data) {
+            console.log(colors.green.bold(data.toString()));
+          });
+          cmd.stderr.on("data", function (data) {
+            console.error(colors.red.bold(data.toString()));
+          });
+          cmd.on("exit", function (code) {
+            console.log("AfterFirstEmitPlugin exited with code " + code.toString());
+          });
+          executed = true;
+        }
+      });
     },
-  );
+  });
 }
 
 if (isOptimized) {

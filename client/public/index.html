@@ -16,10 +16,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
 
-    <title>React Typescript Boilerplate</title>
+    <title>ntropy client</title>
   </head>
 
   <body>
     <div id="root"></div>
+    <% if (process.env.NODE_ENV === 'local') { %>
+    <script src="http://localhost:35729/livereload.js"></script>
+    <% } %>
   </body>
 </html>
