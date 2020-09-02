@@ -1,9 +1,15 @@
-// http://www.jstatsoft.org/v08/i14/paper
+/**
+ * Xorshift32 PRNG
+ *
+ * based on https://github.com/zeh/prando
+ *
+ * http://www.jstatsoft.org/v08/i14/paper
+ */
 
 export default class Xorshift32 {
   private static INT32_MIN = -2147483648;
   private static INT32_MAX = 2147483647;
-  private static TRIPLES: [number, number, number][] = [
+  private static TRIPLES = [
     [1, 3, 10],
     [1, 5, 16],
     [1, 5, 19],
@@ -87,27 +93,37 @@ export default class Xorshift32 {
     [17, 15, 26],
   ];
 
-  private _seed: number;
-  private _value: number;
+  private seed: number;
+  private value: number;
 
+  /**
+   * Generate a new pseudo-random number generator based on Xorshift32 algorithm.
+   *
+   * @param seed - A string seed that determines which pseudo-random number sequence will be created.
+   */
   constructor(seed: string) {
-    this._seed = this.hashCode(seed);
-    this._value = this._seed;
+    this.seed = this.hashCode(seed);
+    this.value = this.seed;
   }
 
+  /**
+   * Generates a pseudo-random number between min (inclusive) and max (exclusive).
+   *
+   * @param min - start of range (inclusive).
+   * @param max - end of range (exclusive).
+   * @return The generated pseudo-random number.
+   */
   public next(min = 0, max = 1): number {
-    this._value = this.xorshift(this._value);
-    return this.map(this._value, Xorshift32.INT32_MIN, Xorshift32.INT32_MAX, min, max);
+    this.value = this.xorshift(this.value);
+    return this.map(this.value, min, max);
   }
 
-  private map(val: number, minFrom: number, maxFrom: number, minTo: number, maxTo: number) {
-    return ((val - minFrom) / (maxFrom - minFrom)) * (maxTo - minTo) + minTo;
+  private map(val: number, min: number, max: number) {
+    return ((val - Xorshift32.INT32_MIN) / (Xorshift32.INT32_MAX - Xorshift32.INT32_MIN)) * (max - min) + min;
   }
 
   private xorshift(value: number) {
-    const tripleIndex = Math.round(
-      this.map(value >> 1, Xorshift32.INT32_MIN, Xorshift32.INT32_MAX, 0, Xorshift32.TRIPLES.length + 1),
-    );
+    const tripleIndex = Math.round(this.map(value >> 1, 0, Xorshift32.TRIPLES.length + 1));
     value ^= value << Xorshift32.TRIPLES[tripleIndex][0];
     value ^= value >> Xorshift32.TRIPLES[tripleIndex][0];
     value ^= value << Xorshift32.TRIPLES[tripleIndex][0];
@@ -115,12 +131,9 @@ export default class Xorshift32 {
   }
 
   private hashCode(seed: string): number {
-    let hash = 0;
-    const chars = [...seed];
-    chars.forEach((c) => {
-      hash = (hash << 5) - hash + c.charCodeAt(0);
-      hash |= 0;
-      hash = this.xorshift(hash);
+    let hash = Xorshift32.INT32_MAX;
+    [...seed].forEach((c, i) => {
+      hash = this.xorshift(((hash << 5) - hash + seed.charCodeAt(i)) | 0);
     });
     return hash;
   }
