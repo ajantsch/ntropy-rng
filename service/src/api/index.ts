@@ -1,15 +1,21 @@
 import { Request, Response } from "express";
 
 import { rng } from "../services";
+import { GenerateResponse } from "../services/rng";
 import { logger, sha512, generateServerSeed, combine } from "../util";
 
-const results = [];
-const user = {
-  serverSeed: "",
+// for demoing purposes only, nonce (number of results per user) and
+// the user's server seed will be provided to the rng and updated
+// after they were provided
+const user: {
+  results: GenerateResponse[];
+  serverSeed: string;
+} = {
+  results: [],
+  serverSeed: generateServerSeed(),
 };
 
 const getHashedServerSeed = async (_req: Request, res: Response): Promise<void> => {
-  user.serverSeed = generateServerSeed();
   res.type("text");
   try {
     res.send(sha512(user.serverSeed));
@@ -24,7 +30,7 @@ const getHashedServerSeed = async (_req: Request, res: Response): Promise<void> 
 
 const getResult = async (req: Request, res: Response): Promise<void> => {
   const { serverSeed } = user;
-  const nonce = results.length + 1;
+  const nonce = user.results.length + 1;
 
   const { rangeStart, rangeEnd, selections, draws, clientSeed } = req.query;
 
@@ -43,8 +49,12 @@ const getResult = async (req: Request, res: Response): Promise<void> => {
       serverSeed,
       nonce,
     });
+
+    // this will later be done by the external service
+    // providing serverSeed and nonce
     user.serverSeed = generateServerSeed();
-    results.push(result);
+    user.results.push(result);
+    // //
   } catch (err) {
     logger.error(err);
     res.status(500);

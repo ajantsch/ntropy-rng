@@ -22,11 +22,13 @@ interface ResponseState extends RNGParams {
 }
 
 interface AppState extends RNGParams {
+  hashedServerSeed: string;
   response: ResponseState | undefined;
   verifyResponse: ResponseState | undefined;
 }
 
 const INITIAL_STATE: AppState = {
+  hashedServerSeed: "",
   clientSeed: "test",
   rangeStart: 1,
   rangeEnd: 100,
@@ -48,6 +50,7 @@ class App extends React.Component<unknown, AppState> {
     e.preventDefault();
     axios.get<string>(`${API_BASE_URL}/hashed-server-seed`).then((res) => {
       console.warn("hashed server seed:", res.data);
+      this.setState({ ...this.state, hashedServerSeed: res.data });
       const { clientSeed, rangeStart, rangeEnd, selections, draws } = this.state;
       axios
         .get<ServiceResponse>(`${API_BASE_URL}/result`, {
@@ -149,6 +152,7 @@ class App extends React.Component<unknown, AppState> {
           </form>
         </Box>
         <Box>
+          {this.state.hashedServerSeed && <pre>hashed serverSeed: {this.state.hashedServerSeed}</pre>}
           {this.state.response?.serviceResponse && (
             <>
               <pre>{JSON.stringify(this.state.response.serviceResponse, null, 2)}</pre>
