@@ -49,7 +49,6 @@ class App extends React.Component<unknown, AppState> {
   onSubmit = (e: React.FormEvent): void => {
     e.preventDefault();
     axios.get<string>(`${API_BASE_URL}/hashed-server-seed`).then((res) => {
-      console.warn("hashed server seed:", res.data);
       this.setState({ ...this.state, hashedServerSeed: res.data });
       const { clientSeed, rangeStart, rangeEnd, selections, draws } = this.state;
       axios
