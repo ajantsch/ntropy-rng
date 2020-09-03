@@ -123,7 +123,7 @@ export default class Xorshift32 {
   }
 
   private xorshift(value: number) {
-    const tripleIndex = Math.round(this.map(value >> 1, 0, Xorshift32.TRIPLES.length + 1));
+    const tripleIndex = Math.round(this.map(value >> 1, 0, Xorshift32.TRIPLES.length));
     value ^= value << Xorshift32.TRIPLES[tripleIndex][0];
     value ^= value >> Xorshift32.TRIPLES[tripleIndex][0];
     value ^= value << Xorshift32.TRIPLES[tripleIndex][0];
@@ -132,7 +132,7 @@ export default class Xorshift32 {
 
   private hashCode(seed: string): number {
     let hash = Xorshift32.INT32_MAX;
-    [...seed].forEach((c, i) => {
+    [...seed].forEach((_c, i) => {
       hash = this.xorshift(((hash << 5) - hash + seed.charCodeAt(i)) | 0);
     });
     return hash;
