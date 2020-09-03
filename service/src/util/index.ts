@@ -21,6 +21,6 @@ const generateServerSeed = (): string => crypto.randomBytes(256).toString("hex")
  * @param nonce
  * @returns {string}
  */
-const combine = (serverSeed: string, clientSeed: string, nonce: string): string => serverSeed + clientSeed + nonce;
+const combine = (serverSeed: string, clientSeed: string, nonce: number): string => `${serverSeed}${clientSeed}${nonce}`;
 
 export { logger, sha512, generateServerSeed, combine };
