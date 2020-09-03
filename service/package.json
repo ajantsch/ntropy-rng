@@ -23,6 +23,7 @@
     "@babel/preset-typescript": "^7.10.4",
     "@typescript-eslint/eslint-plugin": "^3.10.1",
     "@typescript-eslint/parser": "^3.10.1",
+    "@xtuc/long": "^4.2.2",
     "babel-loader": "^8.1.0",
     "clean-webpack-plugin": "^3.0.0",
     "colors": "^1.4.0",

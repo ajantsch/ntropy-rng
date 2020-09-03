@@ -36,7 +36,7 @@ const getResult = async (req: Request, res: Response): Promise<void> => {
 
   res.type("json");
   try {
-    const combination = combine(serverSeed, clientSeed as string, nonce.toString());
+    const combination = combine(serverSeed, clientSeed as string, nonce);
     const result = rng.generate(
       sha512(combination),
       { start: parseInt(rangeStart as string, 10), end: parseInt(rangeEnd as string, 10) },
@@ -69,7 +69,7 @@ const verifyResult = async (req: Request, res: Response): Promise<void> => {
 
   res.type("json");
   try {
-    const combination = combine(serverSeed as string, clientSeed as string, nonce as string);
+    const combination = combine(serverSeed as string, clientSeed as string, parseInt(nonce as string, 10));
     const result = rng.generate(
       sha512(combination),
       { start: parseInt(rangeStart as string, 10), end: parseInt(rangeEnd as string, 10) },

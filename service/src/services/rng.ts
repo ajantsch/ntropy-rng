@@ -1,4 +1,4 @@
-import { Xorshift32 } from "../models";
+import { Xoshiro265starstar } from "../models";
 
 export type GenerateResponse = {
   draws: number[][];
@@ -13,11 +13,11 @@ const generate = (
   const response: {
     draws: number[][];
   } = { draws: [] };
-  const rand = new Xorshift32(userHash);
+  const rand = new Xoshiro265starstar(userHash);
   for (let i = 0; i < draws; i++) {
     let sel: number[] = [];
     for (let y = 0; y < selection; y++) {
-      sel = [...sel, rand.next(range.start, range.end + 1)];
+      sel = [...sel, rand.next(range.start, range.end)];
     }
     response.draws = [...response.draws, sel];
   }
