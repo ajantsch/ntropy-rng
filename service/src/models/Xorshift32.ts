@@ -118,8 +118,8 @@ export default class Xorshift32 {
     return this.map(this.value, min, max);
   }
 
-  private map(val: number, min: number, max: number) {
-    return ((val - Xorshift32.INT32_MIN) / (Xorshift32.INT32_MAX - Xorshift32.INT32_MIN)) * (max - min) + min;
+  private map(value: number, min: number, max: number) {
+    return ((value - Xorshift32.INT32_MIN) / (Xorshift32.INT32_MAX - Xorshift32.INT32_MIN)) * (max - min) + min;
   }
 
   private xorshift(value: number) {
@@ -133,7 +133,9 @@ export default class Xorshift32 {
   private hashCode(seed: string): number {
     let hash = Xorshift32.INT32_MAX;
     [...seed].forEach((_c, i) => {
-      hash = this.xorshift(((hash << 5) - hash + seed.charCodeAt(i)) | 0);
+      hash = (hash << 5) - hash + seed.charCodeAt(i);
+      hash |= 0;
+      hash = this.xorshift(hash);
     });
     return hash;
   }
