@@ -16,12 +16,15 @@ const localEnvironment = NODE_ENV === "local";
 const isOptimized = OPTIMIZED_BUILD === "true" || NODE_ENV === "production";
 const webpackWatch = localEnvironment && !isOptimized;
 const webpackMode = isOptimized ? "production" : "development";
-const webpackDevtool = isOptimized ? "hidden-source-map" : "cheap-eval-source-map";
+const webpackDevtool = isOptimized ? false : "cheap-eval-source-map";
 
 console.log(`Webpack building in ${isOptimized ? "optimized" : "non-optimized"} mode`);
 
 const config = {
-  entry: "./src/index.ts",
+  entry: {
+    index: path.resolve(__dirname, "src/index.ts"),
+    randout: path.resolve(__dirname, "src/randout.ts"),
+  },
   mode: webpackMode,
   watch: webpackWatch,
   watchOptions: {
@@ -31,8 +34,8 @@ const config = {
   devtool: webpackDevtool,
   output: {
     path: path.resolve(__dirname, "dist"),
-    filename: "index.js",
-    sourceMapFilename: "index.js.map",
+    filename: "[name].js",
+    sourceMapFilename: "[name]js.map",
   },
   resolve: {
     extensions: [".js", ".ts"],
