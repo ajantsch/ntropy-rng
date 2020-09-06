@@ -21,7 +21,7 @@ export default class Xoshiro265starstar {
   private value: Long;
 
   constructor(seed: string) {
-    const seeds = this.stringToSeeds(seed);
+    const seeds = this.hashToSeeds(seed);
     this.state = {
       s0: Long.fromValue(seeds[0]),
       s1: Long.fromValue(seeds[1]),
@@ -43,34 +43,45 @@ export default class Xoshiro265starstar {
     return this.map(this.value, min, max);
   };
 
-  private stringToSeeds(hash: string): [number, number, number, number] {
-    if (hash.length % 4 !== 0) {
-      throw Error("seed length must be a multiple of 4");
+  private map(value: Long, min: number, max: number) {
+    const val32 = value.high ^ value.low;
+    return Math.round(
+      ((val32 - Xoshiro265starstar.INT32_MIN) / (Xoshiro265starstar.INT32_MAX - Xoshiro265starstar.INT32_MIN)) *
+        (max - min) +
+        min,
+    );
+  }
+
+  // taken from https://github.com/skratchdot/random-seed/blob/master/index.js
+  private mash(data: string): number {
+    let n = 0xefc8249d;
+    for (let i = 0; i < data.length; i++) {
+      n += data.charCodeAt(i);
+      let h = 0.02519603282416938 * n;
+      n = h >>> 0;
+      h -= n;
+      h *= n;
+      n = h >>> 0;
+      h -= n;
+      n += h * 0x100000000; // 2^32
+    }
+    return (n >>> 0) * 2.3283064365386963e-10; // 2^-32
+  }
+
+  private hashToSeeds(hash: string): [number, number, number, number] {
+    if (hash.length != 128) {
+      throw Error("hash length must be 128");
     }
     const splitHash = ["", "", "", ""];
     splitHash.forEach((_, i) => {
-      const startIdx = i * 4;
-      const length = hash.length / 4;
-      splitHash[i] = hash.substr(startIdx, length);
+      const startIdx = i * 32;
+      splitHash[i] = hash.substr(startIdx, 64);
     });
-
     const seeds: [number, number, number, number] = [0, 0, 0, 0];
     splitHash.forEach((str, i) => {
-      [...str].forEach((c) => {
-        seeds[i] = (seeds[i] << 5) - seeds[1] + c.charCodeAt(0);
-        seeds[i] |= 0;
-      });
+      seeds[i] = this.mash(str) * Number.MAX_SAFE_INTEGER;
     });
     return seeds;
-  }
-
-  private map(value: Long, min: number, max: number) {
-    const val32 = value.high ^ value.low;
-    return (
-      ((val32 - Xoshiro265starstar.INT32_MIN) / (Xoshiro265starstar.INT32_MAX - Xoshiro265starstar.INT32_MIN)) *
-        (max - min) +
-      min
-    );
   }
 
   private xoshiro(): Long {
