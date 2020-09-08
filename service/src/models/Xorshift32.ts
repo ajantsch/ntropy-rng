@@ -31,6 +31,12 @@ export default class Xorshift32 {
    * @return The generated pseudo-random number.
    */
   next(min = 0, max = 1): number {
+    if (min >= max) {
+      throw new Error("min must be smaller than max");
+    }
+    if (max - min > Xorshift32.INT32_MAX - Xorshift32.INT32_MIN) {
+      throw new Error(`range can be max ${Xorshift32.INT32_MAX - Xorshift32.INT32_MIN} wide`);
+    }
     this.value = this.xorshift(this.value);
     return this.map(this.value, min, max);
   }

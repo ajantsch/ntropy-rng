@@ -39,6 +39,12 @@ export default class Xoshiro265starstar {
    * @return The generated pseudo-random number.
    */
   next = (min = 0, max = 1): number => {
+    if (min >= max) {
+      throw new Error("min must be smaller than max");
+    }
+    if (max - min > Xoshiro265starstar.INT32_MAX - Xoshiro265starstar.INT32_MIN) {
+      throw new Error(`range can be max ${Xoshiro265starstar.INT32_MAX - Xoshiro265starstar.INT32_MIN} wide`);
+    }
     this.value = this.xoshiro();
     return this.map(this.value, min, max);
   };
