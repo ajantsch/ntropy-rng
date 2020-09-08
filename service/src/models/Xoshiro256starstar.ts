@@ -22,6 +22,9 @@ export default class Xoshiro265starstar {
   private value: Long;
 
   constructor(seed: string, secret: string) {
+    if (secret.length != 512) {
+      throw new Error("secret must be of length 512");
+    }
     const hmac = crypto.createHmac("sha512", secret);
     hmac.update(seed);
     const seeds = this.hashToSeeds(hmac.digest("hex"));
@@ -31,7 +34,7 @@ export default class Xoshiro265starstar {
       s2: Long.fromValue(seeds[2]),
       s3: Long.fromValue(seeds[3]),
     };
-    this.value = this.xoshiro();
+    this.value = this.xoshiro256();
   }
 
   /**
@@ -48,7 +51,7 @@ export default class Xoshiro265starstar {
     if (max - min > Xoshiro265starstar.INT32_MAX - Xoshiro265starstar.INT32_MIN) {
       throw new Error(`range can be max ${Xoshiro265starstar.INT32_MAX - Xoshiro265starstar.INT32_MIN} wide`);
     }
-    this.value = this.xoshiro();
+    this.value = this.xoshiro256();
     return this.map(this.value, min, max);
   };
 
@@ -93,7 +96,7 @@ export default class Xoshiro265starstar {
     return seeds;
   }
 
-  private xoshiro(): Long {
+  private xoshiro256(): Long {
     const r = this.state.s1.multiply(5).rotateLeft(7).multiply(9);
     const t = this.state.s1.shiftLeft(17);
 

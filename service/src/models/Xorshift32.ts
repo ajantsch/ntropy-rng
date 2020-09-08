@@ -21,6 +21,9 @@ export default class Xorshift32 {
    * @param seed - A string seed that determines which pseudo-random number sequence will be created.
    */
   constructor(seed: string, secret: string) {
+    if (secret.length != 512) {
+      throw new Error("secret must be of length 512");
+    }
     const hmac = crypto.createHmac("sha512", secret);
     hmac.update(seed);
     this.seed = this.hashCode(hmac.digest("hex"));
@@ -57,7 +60,7 @@ export default class Xorshift32 {
   }
 
   private hashCode(seed: string): number {
-    let hash = Xorshift32.INT32_MAX;
+    let hash = 0;
     [...seed].forEach((_c, i) => {
       hash = (hash << 5) - hash + seed.charCodeAt(i);
       hash |= 0;
