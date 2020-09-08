@@ -4,6 +4,7 @@
  * translated from http://xoshiro.di.unimi.it/xoshiro256starstar.c
  */
 
+import crypto from "crypto";
 import Long from "@xtuc/long";
 
 type State = {
@@ -20,8 +21,10 @@ export default class Xoshiro265starstar {
   private state: State;
   private value: Long;
 
-  constructor(seed: string) {
-    const seeds = this.hashToSeeds(seed);
+  constructor(seed: string, secret: string) {
+    const hmac = crypto.createHmac("sha512", secret);
+    hmac.update(seed);
+    const seeds = this.hashToSeeds(hmac.digest("hex"));
     this.state = {
       s0: Long.fromValue(seeds[0]),
       s1: Long.fromValue(seeds[1]),

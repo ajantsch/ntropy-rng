@@ -68,6 +68,7 @@ const getResult = async (req: Request, res: Response): Promise<void> => {
     const combination = combine(serverSeed, clientSeed, nonce);
     const result = rng.generate(
       sha512(combination),
+      serverSeed,
       { start: parseInt(rangeStart as string, 10), end: parseInt(rangeEnd as string, 10) },
       parseInt(selections as string, 10) || 1,
       parseInt(draws as string, 10) || 1,
@@ -143,6 +144,7 @@ const verifyResult = async (req: Request, res: Response): Promise<void> => {
     const combination = combine(serverSeed, clientSeed, parseInt(nonce as string, 10));
     const result = rng.generate(
       sha512(combination),
+      serverSeed,
       { start: parseInt(rangeStart as string, 10), end: parseInt(rangeEnd as string, 10) },
       parseInt(selections as string, 10) || 1,
       parseInt(draws as string, 10) || 1,

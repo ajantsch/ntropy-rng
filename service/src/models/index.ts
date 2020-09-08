@@ -1,2 +1,3 @@
 export { default as Xorshift32 } from "./Xorshift32";
-export { default as Xoshiro265starstar } from "./Xoshiro256starstar";
+export { default as Xoshiro128starstar } from "./Xoshiro128starstar";
+export { default as Xoshiro256starstar } from "./Xoshiro256starstar";

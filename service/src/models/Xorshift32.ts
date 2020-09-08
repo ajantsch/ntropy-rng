@@ -6,6 +6,8 @@
  * http://www.jstatsoft.org/v08/i14/paper
  */
 
+import crypto from "crypto";
+
 export default class Xorshift32 {
   private static INT32_MIN = -2147483648;
   private static INT32_MAX = 2147483647;
@@ -18,8 +20,10 @@ export default class Xorshift32 {
    *
    * @param seed - A string seed that determines which pseudo-random number sequence will be created.
    */
-  constructor(seed: string) {
-    this.seed = this.hashCode(seed);
+  constructor(seed: string, secret: string) {
+    const hmac = crypto.createHmac("sha512", secret);
+    hmac.update(seed);
+    this.seed = this.hashCode(hmac.digest("hex"));
     this.value = this.seed;
   }
 

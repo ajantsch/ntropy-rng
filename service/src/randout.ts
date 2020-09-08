@@ -1,7 +1,7 @@
 import { argv } from "yargs";
 
 import { sha512, generateServerSeed, combine } from "./util";
-import { Xorshift32, Xoshiro265starstar } from "./models";
+import { Xorshift32, Xoshiro256starstar } from "./models";
 
 const user = {
   serverSeed: generateServerSeed(),
@@ -23,7 +23,7 @@ for (let i = 0; i < count; i++) {
   let num = "";
   switch (algo) {
     case "xoshiro":
-      num = new Xoshiro265starstar(sha512(combine(user.serverSeed, clientseed, user.nonce)))
+      num = new Xoshiro256starstar(sha512(combine(user.serverSeed, clientseed, user.nonce)), user.serverSeed)
         .next(0, 4294967295)
         .toString();
       num = "          ".slice(0, 10 - num.length) + num;
