@@ -24,13 +24,13 @@ for (let i = 0; i < count; i++) {
   switch (algo) {
     case "xoshiro":
       num = new Xoshiro265starstar(sha512(combine(user.serverSeed, clientseed, user.nonce)))
-        .next(0, 4294967296)
+        .next(0, 4294967295)
         .toString();
       num = "          ".slice(0, 10 - num.length) + num;
       process.stdout.write(num + "\n");
       break;
     case "xorshift":
-      num = new Xorshift32(sha512(combine(user.serverSeed, clientseed, user.nonce))).next(0, 4294967296).toString();
+      num = new Xorshift32(sha512(combine(user.serverSeed, clientseed, user.nonce))).next(0, 4294967295).toString();
       num = "          ".slice(0, 10 - num.length) + num;
       process.stdout.write(num + "\n");
   }
