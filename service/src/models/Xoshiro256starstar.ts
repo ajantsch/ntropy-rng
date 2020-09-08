@@ -51,10 +51,10 @@ export default class Xoshiro265starstar {
 
   private map(value: Long, min: number, max: number) {
     const val32 = value.high ^ value.low;
-    return Math.round(
+    return (
       ((val32 - Xoshiro265starstar.INT32_MIN) / (Xoshiro265starstar.INT32_MAX - Xoshiro265starstar.INT32_MIN)) *
         (max - min) +
-        min,
+      min
     );
   }
 
