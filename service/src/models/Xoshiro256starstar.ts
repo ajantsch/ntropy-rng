@@ -19,7 +19,7 @@ export default class Xoshiro265starstar {
   private static INT32_MAX = 2147483647;
 
   private state: State;
-  private value: Long;
+  private value: Long = Long.ZERO;
 
   constructor(seed: string, secret: string) {
     if (secret.length != 512) {
@@ -34,7 +34,6 @@ export default class Xoshiro265starstar {
       s2: Long.fromValue(seeds[2]),
       s3: Long.fromValue(seeds[3]),
     };
-    this.value = this.xoshiro256();
   }
 
   /**
