@@ -4,7 +4,7 @@ import { rng } from "../services";
 import { GenerateResponse } from "../services/rng";
 import { logger, sha512, generateServerSeed, combine } from "../util";
 
-// for demoing purposes only, nonce (number of results per user) and
+// for demo purposes only, nonce (number of results per user) and
 // the user's server seed will be provided to the rng and updated
 // after they were provided
 const user: {
@@ -35,8 +35,37 @@ const getResult = async (req: Request, res: Response): Promise<void> => {
   const { rangeStart, rangeEnd, selections, draws, clientSeed } = req.query;
 
   res.type("json");
+
+  if (parseInt(rangeStart as string, 10) === NaN || parseInt(rangeEnd as string, 10) === NaN) {
+    res.status(500);
+    res.send(JSON.stringify(new Error("rangeStart and rangeEnd must be numeric values")));
+    res.end();
+    return;
+  }
+
+  if (parseInt(selections as string, 10) === NaN) {
+    res.status(500);
+    res.send(JSON.stringify(new Error("selections must be numeric value")));
+    res.end();
+    return;
+  }
+
+  if (parseInt(draws as string, 10) === NaN) {
+    res.status(500);
+    res.send(JSON.stringify(new Error("draws must be numeric value")));
+    res.end();
+    return;
+  }
+
+  if (typeof clientSeed !== "string") {
+    res.status(500);
+    res.send(JSON.stringify(new Error("clientSeed must be alphanumeric value")));
+    res.end();
+    return;
+  }
+
   try {
-    const combination = combine(serverSeed, clientSeed as string, nonce);
+    const combination = combine(serverSeed, clientSeed, nonce);
     const result = rng.generate(
       sha512(combination),
       { start: parseInt(rangeStart as string, 10), end: parseInt(rangeEnd as string, 10) },
@@ -67,9 +96,51 @@ const getResult = async (req: Request, res: Response): Promise<void> => {
 const verifyResult = async (req: Request, res: Response): Promise<void> => {
   const { clientSeed, serverSeed, nonce, rangeStart, rangeEnd, selections, draws } = req.query;
 
+  if (parseInt(rangeStart as string, 10) === NaN || parseInt(rangeEnd as string, 10) === NaN) {
+    res.status(500);
+    res.send(JSON.stringify(new Error("rangeStart and rangeEnd must be numeric values")));
+    res.end();
+    return;
+  }
+
+  if (parseInt(selections as string, 10) === NaN) {
+    res.status(500);
+    res.send(JSON.stringify(new Error("selections must be numeric value")));
+    res.end();
+    return;
+  }
+
+  if (parseInt(draws as string, 10) === NaN) {
+    res.status(500);
+    res.send(JSON.stringify(new Error("draws must be numeric value")));
+    res.end();
+    return;
+  }
+
+  if (parseInt(nonce as string, 10) === NaN) {
+    res.status(500);
+    res.send(JSON.stringify(new Error("nonce must be numeric value")));
+    res.end();
+    return;
+  }
+
+  if (typeof serverSeed !== "string") {
+    res.status(500);
+    res.send(JSON.stringify(new Error("serverSeed must be alphanumeric value")));
+    res.end();
+    return;
+  }
+
+  if (typeof clientSeed !== "string") {
+    res.status(500);
+    res.send(JSON.stringify(new Error("clientSeed must be alphanumeric value")));
+    res.end();
+    return;
+  }
+
   res.type("json");
   try {
-    const combination = combine(serverSeed as string, clientSeed as string, parseInt(nonce as string, 10));
+    const combination = combine(serverSeed, clientSeed, parseInt(nonce as string, 10));
     const result = rng.generate(
       sha512(combination),
       { start: parseInt(rangeStart as string, 10), end: parseInt(rangeEnd as string, 10) },
