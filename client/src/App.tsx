@@ -85,6 +85,7 @@ class App extends React.Component<unknown, AppState> {
             rangeEnd: this.state.response.rangeEnd,
             selections: this.state.response.selections,
             draws: this.state.response.draws,
+            replacements: this.state.response.replacements,
           },
         })
         .then((res) => {
