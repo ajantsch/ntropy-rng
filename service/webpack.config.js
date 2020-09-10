@@ -23,7 +23,8 @@ console.log(`Webpack building in ${isOptimized ? "optimized" : "non-optimized"} 
 const config = {
   entry: {
     index: path.resolve(__dirname, "src/index.ts"),
-    randout: path.resolve(__dirname, "src/randout.ts"),
+    dieharderInputFile: path.resolve(__dirname, "src/dieharderInputFile.ts"),
+    gliOutput: path.resolve(__dirname, "src/gliOutput.ts"),
   },
   mode: webpackMode,
   watch: webpackWatch,
