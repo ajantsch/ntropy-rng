@@ -7,6 +7,8 @@
 
 The additional parameter `--replacements` allows for numbers to be repeated within selections.
 
+> rangestart and rangeend are inclusive
+
 ## output to txt file for usage with dieharder
 
 - `yarn build`

@@ -16,10 +16,13 @@ const generate = (
     draws: number[][];
   } = { draws: [] };
   if (range.start >= range.end) {
-    throw new Error("range.start must be smaller than range.min");
+    throw new RangeError("range.start must be smaller than range.min");
   }
   if (range.end - range.start > Xoshiro256starstar.MAX - Xoshiro256starstar.MIN) {
-    throw new Error(`range can be max ${Xoshiro256starstar.MAX - Xoshiro256starstar.MIN} wide`);
+    throw new RangeError(`range can be max ${Xoshiro256starstar.MAX - Xoshiro256starstar.MIN} wide`);
+  }
+  if (!replacements && range.end - range.start + 1 < selection) {
+    throw new RangeError(`range too small for desired selection size`);
   }
   const map = (value: number, min: number, max: number) => {
     return Math.floor(

@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { serializeError } from "serialize-error";
 
 import { rng } from "../services";
 import { GenerateResponse } from "../services/rng";
@@ -22,7 +23,7 @@ const getHashedServerSeed = async (_req: Request, res: Response): Promise<void> 
   } catch (err) {
     logger.error(err);
     res.status(500);
-    res.send(JSON.stringify(err));
+    res.send(err.message);
   } finally {
     res.end();
   }
@@ -38,28 +39,28 @@ const getResult = async (req: Request, res: Response): Promise<void> => {
 
   if (parseInt(rangeStart as string, 10) === NaN || parseInt(rangeEnd as string, 10) === NaN) {
     res.status(500);
-    res.send(JSON.stringify(new Error("rangeStart and rangeEnd must be numeric values")));
+    res.send(serializeError(new RangeError("rangeStart and rangeEnd must be numeric values")));
     res.end();
     return;
   }
 
   if (parseInt(selections as string, 10) === NaN) {
     res.status(500);
-    res.send(JSON.stringify(new Error("selections must be numeric value")));
+    res.send(serializeError(new TypeError("selections must be numeric value")));
     res.end();
     return;
   }
 
   if (parseInt(draws as string, 10) === NaN) {
     res.status(500);
-    res.send(JSON.stringify(new Error("draws must be numeric value")));
+    res.send(serializeError(new TypeError("draws must be numeric value")));
     res.end();
     return;
   }
 
   if (typeof clientSeed !== "string") {
     res.status(500);
-    res.send(JSON.stringify(new Error("clientSeed must be alphanumeric value")));
+    res.send(serializeError(new TypeError("clientSeed must be alphanumeric value")));
     res.end();
     return;
   }
@@ -87,9 +88,10 @@ const getResult = async (req: Request, res: Response): Promise<void> => {
     user.results.push(result);
     // //
   } catch (err) {
+    console.warn(err);
     logger.error(err);
     res.status(500);
-    res.send(JSON.stringify(err));
+    res.send(serializeError(err));
   } finally {
     res.end();
   }
@@ -100,42 +102,42 @@ const verifyResult = async (req: Request, res: Response): Promise<void> => {
 
   if (parseInt(rangeStart as string, 10) === NaN || parseInt(rangeEnd as string, 10) === NaN) {
     res.status(500);
-    res.send(JSON.stringify(new Error("rangeStart and rangeEnd must be numeric values")));
+    res.send(serializeError(new RangeError("rangeStart and rangeEnd must be numeric values")));
     res.end();
     return;
   }
 
   if (parseInt(selections as string, 10) === NaN) {
     res.status(500);
-    res.send(JSON.stringify(new Error("selections must be numeric value")));
+    res.send(serializeError(new TypeError("selections must be numeric value")));
     res.end();
     return;
   }
 
   if (parseInt(draws as string, 10) === NaN) {
     res.status(500);
-    res.send(JSON.stringify(new Error("draws must be numeric value")));
+    res.send(serializeError(new TypeError("draws must be numeric value")));
     res.end();
     return;
   }
 
   if (parseInt(nonce as string, 10) === NaN) {
     res.status(500);
-    res.send(JSON.stringify(new Error("nonce must be numeric value")));
+    res.send(serializeError(new TypeError("nonce must be numeric value")));
     res.end();
     return;
   }
 
   if (typeof serverSeed !== "string") {
     res.status(500);
-    res.send(JSON.stringify(new Error("serverSeed must be alphanumeric value")));
+    res.send(serializeError(new TypeError("serverSeed must be alphanumeric value")));
     res.end();
     return;
   }
 
   if (typeof clientSeed !== "string") {
     res.status(500);
-    res.send(JSON.stringify(new Error("clientSeed must be alphanumeric value")));
+    res.send(serializeError(new TypeError("clientSeed must be alphanumeric value")));
     res.end();
     return;
   }
@@ -157,7 +159,7 @@ const verifyResult = async (req: Request, res: Response): Promise<void> => {
   } catch (err) {
     logger.error(err);
     res.status(500);
-    res.send(JSON.stringify(err));
+    res.send(serializeError(err));
   } finally {
     res.end();
   }
