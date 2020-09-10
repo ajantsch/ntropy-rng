@@ -1,4 +1,4 @@
-import { Xoshiro128starstar } from "../models";
+import { Xoshiro256starstar } from "../models";
 
 export type GenerateResponse = {
   draws: number[][];
@@ -14,7 +14,7 @@ const generate = (
   const response: {
     draws: number[][];
   } = { draws: [] };
-  const rand = new Xoshiro128starstar(userHash, serverSeed);
+  const rand = new Xoshiro256starstar(userHash, serverSeed);
   for (let i = 0; i < draws; i++) {
     let sel: number[] = [];
     for (let y = 0; y < selection; y++) {

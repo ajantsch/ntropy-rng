@@ -31,7 +31,7 @@ for (let i = 0; i < count; i++) {
       break;
     case "xoshiro128":
       num = new Xoshiro128starstar(sha512(combine(user.serverSeed, clientseed, user.nonce)), user.serverSeed)
-        .next(0, 4294967295)
+        .next(0, 4294967296)
         .toString();
       num = "          ".slice(0, 10 - num.length) + num;
       process.stdout.write(num + "\n");
