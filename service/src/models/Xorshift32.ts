@@ -7,8 +7,9 @@
  */
 
 import crypto from "crypto";
+import { RNG } from "./index";
 
-export default class Xorshift32 {
+export default class Xorshift32 implements RNG {
   private static INT32_MIN = -2147483648;
   private static INT32_MAX = 2147483647;
 

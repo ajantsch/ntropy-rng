@@ -6,6 +6,7 @@
 
 import crypto from "crypto";
 import Long from "@xtuc/long";
+import { RNG } from "./index";
 
 type State = {
   s0: Long;
@@ -14,7 +15,7 @@ type State = {
   s3: Long;
 };
 
-export default class Xoshiro265starstar {
+export default class Xoshiro265starstar implements RNG {
   private static INT32_MIN = -2147483648;
   private static INT32_MAX = 2147483647;
 

@@ -5,6 +5,7 @@
  */
 
 import crypto from "crypto";
+import { RNG } from "./index";
 
 type State = {
   s0: number;
@@ -13,7 +14,7 @@ type State = {
   s3: number;
 };
 
-export default class Xoshiro128starstar {
+export default class Xoshiro128starstar implements RNG {
   private state: State;
   private value = 0;
 
