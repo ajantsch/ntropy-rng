@@ -1,6 +1,6 @@
 import React from "react";
 import axios from "axios";
-import { Box, Button, Container, TextField, Typography } from "@material-ui/core";
+import { Box, Button, Container, TextField, Typography, FormControlLabel, Checkbox } from "@material-ui/core";
 import styled from "styled-components";
 
 interface ServiceResponse {
@@ -15,6 +15,7 @@ interface RNGParams {
   rangeEnd: number;
   selections: number;
   draws: number;
+  replacements: boolean;
 }
 
 interface ResponseState extends RNGParams {
@@ -34,6 +35,7 @@ const INITIAL_STATE: AppState = {
   rangeEnd: 100,
   selections: 1,
   draws: 1,
+  replacements: false,
   response: undefined,
   verifyResponse: undefined,
 };
@@ -50,16 +52,19 @@ class App extends React.Component<unknown, AppState> {
     e.preventDefault();
     axios.get<string>(`${API_BASE_URL}/hashed-server-seed`).then((res) => {
       this.setState({ ...this.state, hashedServerSeed: res.data });
-      const { clientSeed, rangeStart, rangeEnd, selections, draws } = this.state;
+      const { clientSeed, rangeStart, rangeEnd, selections, draws, replacements } = this.state;
       axios
         .get<ServiceResponse>(`${API_BASE_URL}/result`, {
-          params: { clientSeed, rangeStart, rangeEnd, selections, draws },
+          params: { clientSeed, rangeStart, rangeEnd, selections, draws, replacements },
         })
         .then((res) => {
           this.setState({
             ...this.state,
             ...{
-              response: { serviceResponse: res.data, ...{ clientSeed, rangeStart, rangeEnd, selections, draws } },
+              response: {
+                serviceResponse: res.data,
+                ...{ clientSeed, rangeStart, rangeEnd, selections, draws, replacements },
+              },
               verifyResponse: undefined,
             },
           });
@@ -143,6 +148,19 @@ class App extends React.Component<unknown, AppState> {
                 this.setState({ ...this.state, draws: e.target.value ? parseInt(e.target.value, 10) : 0 })
               }
               label="Draws"
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={this.state.replacements}
+                  onChange={() => {
+                    this.setState({ ...this.state, replacements: !this.state.replacements });
+                  }}
+                  name="replacements"
+                  color="primary"
+                />
+              }
+              label="Replacements"
             />
             <br />
             <Button type="submit" variant="contained">

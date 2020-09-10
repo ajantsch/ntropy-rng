@@ -1,17 +1,9 @@
 # ntropy rng service
 
-## available rng models:
-
-- xorshift32
-- xoshiro128\*\*
-- xoshiro256\*\*
-
-Change `src/service/rng.ts` to select a different one (xoshiro256\*\* is used by the service by default).
-
-## output to txt file
+## output to txt file for usage with dieharder
 
 - `yarn build`
-- `node ./dist/randout.js --algo xoshiro256 --clientseed abcdef --count 10000000 > randout-xoshiro256.txt`
+- `node ./dist/randout.js --clientseed abcdef --count 10000000 > randout-xoshiro256.txt`
 
   This creates a file `randout-xoshiro256.txt` with 10.000.000 values generated with the xoshiro256\*\* algorithm.
 

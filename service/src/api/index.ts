@@ -32,7 +32,7 @@ const getResult = async (req: Request, res: Response): Promise<void> => {
   const { serverSeed } = user;
   const nonce = user.results.length + 1;
 
-  const { rangeStart, rangeEnd, selections, draws, clientSeed } = req.query;
+  const { rangeStart, rangeEnd, selections, draws, replacements, clientSeed } = req.query;
 
   res.type("json");
 
@@ -72,6 +72,7 @@ const getResult = async (req: Request, res: Response): Promise<void> => {
       { start: parseInt(rangeStart as string, 10), end: parseInt(rangeEnd as string, 10) },
       parseInt(selections as string, 10) || 1,
       parseInt(draws as string, 10) || 1,
+      !!replacements && (replacements as string) === "true",
     );
     res.status(200);
     res.send({
@@ -95,7 +96,7 @@ const getResult = async (req: Request, res: Response): Promise<void> => {
 };
 
 const verifyResult = async (req: Request, res: Response): Promise<void> => {
-  const { clientSeed, serverSeed, nonce, rangeStart, rangeEnd, selections, draws } = req.query;
+  const { clientSeed, serverSeed, nonce, rangeStart, rangeEnd, selections, draws, replacements } = req.query;
 
   if (parseInt(rangeStart as string, 10) === NaN || parseInt(rangeEnd as string, 10) === NaN) {
     res.status(500);
@@ -148,6 +149,7 @@ const verifyResult = async (req: Request, res: Response): Promise<void> => {
       { start: parseInt(rangeStart as string, 10), end: parseInt(rangeEnd as string, 10) },
       parseInt(selections as string, 10) || 1,
       parseInt(draws as string, 10) || 1,
+      !!replacements && (replacements as string) === "true",
     );
     res.send({
       result,

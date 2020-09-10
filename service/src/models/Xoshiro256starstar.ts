@@ -15,9 +15,9 @@ type State = {
   s3: Long;
 };
 
-export default class Xoshiro265starstar implements RNG {
-  private static INT32_MIN = -2147483648;
-  private static INT32_MAX = 2147483647;
+export default class Xoshiro256starstar implements RNG {
+  static MIN = -2147483648;
+  static MAX = 2147483647;
 
   private state: State;
   private value: Long = Long.ZERO;
@@ -38,30 +38,18 @@ export default class Xoshiro265starstar implements RNG {
   }
 
   /**
-   * Generates a pseudo-random number between min (inclusive) and max (exclusive).
+   * Generates a pseudo-random number between -2147483648 and 2147483647.
    *
-   * @param min - start of range (inclusive).
-   * @param max - end of range (exclusive).
    * @return The generated pseudo-random number.
    */
-  next = (min = 0, max = 1): number => {
-    if (min >= max) {
-      throw new Error("min must be smaller than max");
-    }
-    if (max - min > Xoshiro265starstar.INT32_MAX - Xoshiro265starstar.INT32_MIN) {
-      throw new Error(`range can be max ${Xoshiro265starstar.INT32_MAX - Xoshiro265starstar.INT32_MIN} wide`);
-    }
+  next = (): number => {
     this.value = this.xoshiro256();
-    return this.map(this.value, min, max);
+    return this.value.high ^ this.value.low;
   };
 
   private map(value: Long, min: number, max: number) {
     const val32 = value.high ^ value.low;
-    return (
-      ((val32 - Xoshiro265starstar.INT32_MIN) / (Xoshiro265starstar.INT32_MAX - Xoshiro265starstar.INT32_MIN)) *
-        (max - min) +
-      min
-    );
+    return ((val32 - Xoshiro256starstar.MIN) / (Xoshiro256starstar.MAX - Xoshiro256starstar.MIN)) * (max - min) + min;
   }
 
   // taken from https://github.com/skratchdot/random-seed/blob/master/index.js
