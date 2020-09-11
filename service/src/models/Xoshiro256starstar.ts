@@ -6,7 +6,7 @@
 
 import crypto from "crypto";
 import Long from "@xtuc/long";
-import { RNG } from "./index";
+import { RandomNumberGenerator } from "./index";
 
 type State = {
   s0: Long;
@@ -15,9 +15,9 @@ type State = {
   s3: Long;
 };
 
-export default class Xoshiro256starstar implements RNG {
-  static MIN = -2147483648;
-  static MAX = 2147483647;
+export default class Xoshiro256starstar implements RandomNumberGenerator {
+  private static MIN = -2147483648;
+  private static MAX = 2147483647;
 
   private state: State;
   private value: Long = Long.ZERO;
@@ -38,8 +38,31 @@ export default class Xoshiro256starstar implements RNG {
   }
 
   /**
+   * Returns lower end of the output range
+   *
+   * @return The lowest possible number to generate
+   */
+  min = (): number => {
+    return Xoshiro256starstar.MIN;
+  };
+
+  /**
+   * Returns the upper end of the output range
+   *
+   * @return The highest possible number to generate
+   */
+  max = (): number => {
+    return Xoshiro256starstar.MAX;
+  };
+
+  /**
    * Generates a pseudo-random number between -2147483648 and 2147483647.
    *
+   * if min and max parameters are given, a pseudo-random floating point number
+   * within this range is returned.
+   *
+   * @param min - The minimum number of the range (inclusive)
+   * @param max - The maximum number of the range (exclusive)
    * @return The generated pseudo-random number.
    */
   next = (): number => {
@@ -47,9 +70,48 @@ export default class Xoshiro256starstar implements RNG {
     return this.value.high ^ this.value.low;
   };
 
-  private map(value: Long, min: number, max: number) {
-    const val32 = value.high ^ value.low;
-    return ((val32 - Xoshiro256starstar.MIN) / (Xoshiro256starstar.MAX - Xoshiro256starstar.MIN)) * (max - min) + min;
+  /**
+   * Generates a pseudo-random floating point number within the given range.
+   *
+   * @param min - The minimum number of the range (inclusive)
+   * @param max - The maximum number of the range (exclusive)
+   * @return The generated pseudo-random number.
+   */
+  nextFloat(min = 0, max = 1): number {
+    if (min >= max) {
+      throw new RangeError("min must be smaller than max");
+    }
+    if (max - min > Xoshiro256starstar.MAX - Xoshiro256starstar.MIN) {
+      throw new RangeError(`range can be max ${Xoshiro256starstar.MAX - Xoshiro256starstar.MIN} wide`);
+    }
+    return (
+      (((this.value.high ^ this.value.low) - Xoshiro256starstar.MIN) /
+        (Xoshiro256starstar.MAX - Xoshiro256starstar.MIN)) *
+        (max - min) +
+      min
+    );
+  }
+
+  /**
+   * Generates a pseudo-random integer within the given range
+   *
+   * @param min - The minimum integer value to return (inclusive)
+   * @param max - The maximum integer value to return (inclusive)
+   */
+  nextInt(min = 0, max = 1): number {
+    if (min >= max) {
+      throw new RangeError("min must be smaller than max");
+    }
+    if (max - min > Xoshiro256starstar.MAX - Xoshiro256starstar.MIN) {
+      throw new RangeError(`range can be max ${Xoshiro256starstar.MAX - Xoshiro256starstar.MIN} wide`);
+    }
+    this.value = this.xoshiro256();
+    return Math.floor(
+      (((this.value.high ^ this.value.low) - Xoshiro256starstar.MIN) /
+        (Xoshiro256starstar.MAX - Xoshiro256starstar.MIN)) *
+        (max + 1 - min) +
+        min,
+    );
   }
 
   // taken from https://github.com/skratchdot/random-seed/blob/master/index.js

@@ -19,11 +19,9 @@ process.stdout.write(`count: ${count}\n`);
 process.stdout.write(`numbit: ${32}\n`);
 
 for (let i = 0; i < count; i++) {
+  const rng = new Xoshiro256starstar(sha512(combine(user.serverSeed, clientseed, user.nonce)), user.serverSeed);
   let num = "";
-  num = (
-    new Xoshiro256starstar(sha512(combine(user.serverSeed, clientseed, user.nonce)), user.serverSeed).next() +
-    Xoshiro256starstar.MAX
-  ).toString();
+  num = (rng.next() + rng.max()).toString();
   num = "          ".slice(0, 10 - num.length) + num;
   process.stdout.write(num + "\n");
   user.serverSeed = generateServerSeed();
