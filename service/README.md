@@ -2,7 +2,7 @@
 
 ## output to txt file for GLI
 
-- `yarn build`
+- `env NODE_ENV=production yarn build`
 - `node ./dist/gliOutput.js --rangestart 1 --rangeend 52 --selections 52 --draws 100 > gli.txt
 
 The additional parameter `--replacements` allows for numbers to be repeated within selections.
@@ -11,7 +11,7 @@ The additional parameter `--replacements` allows for numbers to be repeated with
 
 ## output to txt file for usage with dieharder
 
-- `yarn build`
+- `env NODE_ENV=production yarn build`
 - `node ./dist/dieharderInputFile.js --clientseed abcdef --count 10000000 > xoshiro256.txt`
 
   This creates a file `xoshiro256.txt` with 10.000.000 values generated with the xoshiro256\*\* algorithm.
