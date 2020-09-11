@@ -3,7 +3,7 @@
 ## output to txt file for GLI
 
 - `env NODE_ENV=production yarn build`
-- `node ./dist/gliOutput.js --rangestart 1 --rangeend 52 --selections 52 --draws 100 > gli.txt
+- `node ./dist/gliOutput.js --rangestart 1 --rangeend 52 --selections 52 --draws 100 > gli.txt`
 
 The additional parameter `--replacements` allows for numbers to be repeated within selections.
 
