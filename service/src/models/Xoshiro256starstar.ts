@@ -123,7 +123,7 @@ export default class Xoshiro256starstar implements RandomNumberGenerator {
     });
     const seeds: [number, number, number, number] = [0, 0, 0, 0];
     splitHash.forEach((str, i) => {
-      seeds[i] = this.mash(str) * Number.MAX_SAFE_INTEGER;
+      seeds[i] = this.mash(str) * Number.MAX_SAFE_INTEGER || 1;
     });
     return seeds;
   }
