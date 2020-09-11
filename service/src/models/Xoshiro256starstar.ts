@@ -38,24 +38,6 @@ export default class Xoshiro256starstar implements RandomNumberGenerator {
   }
 
   /**
-   * Returns lower end of the output range
-   *
-   * @return The lowest possible number to generate
-   */
-  min = (): number => {
-    return Xoshiro256starstar.MIN;
-  };
-
-  /**
-   * Returns the upper end of the output range
-   *
-   * @return The highest possible number to generate
-   */
-  max = (): number => {
-    return Xoshiro256starstar.MAX;
-  };
-
-  /**
    * Generates a pseudo-random number between -2147483648 and 2147483647.
    *
    * if min and max parameters are given, a pseudo-random floating point number
