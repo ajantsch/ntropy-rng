@@ -49,7 +49,7 @@ export default class Xoshiro256starstar implements RandomNumberGenerator {
    */
   next = (): number => {
     this.value = this.xoshiro256();
-    return this.value.high ^ this.value.low;
+    return this.longToNumber(this.value);
   };
 
   /**
@@ -60,18 +60,8 @@ export default class Xoshiro256starstar implements RandomNumberGenerator {
    * @return The generated pseudo-random number.
    */
   nextFloat(min = 0, max = 1): number {
-    if (min >= max) {
-      throw new RangeError("min must be smaller than max");
-    }
-    if (max - min > Xoshiro256starstar.MAX - Xoshiro256starstar.MIN) {
-      throw new RangeError(`range can be max ${Xoshiro256starstar.MAX - Xoshiro256starstar.MIN} wide`);
-    }
-    return (
-      (((this.value.high ^ this.value.low) - Xoshiro256starstar.MIN) /
-        (Xoshiro256starstar.MAX - Xoshiro256starstar.MIN)) *
-        (max - min) +
-      min
-    );
+    this.value = this.xoshiro256();
+    return this.map(this.value, min, max);
   }
 
   /**
@@ -81,18 +71,25 @@ export default class Xoshiro256starstar implements RandomNumberGenerator {
    * @param max - The maximum integer value to return (inclusive)
    */
   nextInt(min = 0, max = 1): number {
+    this.value = this.xoshiro256();
+    return Math.floor(this.map(this.value, min, max + 1));
+  }
+
+  private longToNumber(value: Long): number {
+    return value.high ^ value.low;
+  }
+
+  private map(value: Long, min = 0, max = 0): number {
     if (min >= max) {
       throw new RangeError("min must be smaller than max");
     }
     if (max - min > Xoshiro256starstar.MAX - Xoshiro256starstar.MIN) {
       throw new RangeError(`range can be max ${Xoshiro256starstar.MAX - Xoshiro256starstar.MIN} wide`);
     }
-    this.value = this.xoshiro256();
-    return Math.floor(
-      (((this.value.high ^ this.value.low) - Xoshiro256starstar.MIN) /
-        (Xoshiro256starstar.MAX - Xoshiro256starstar.MIN)) *
-        (max + 1 - min) +
-        min,
+    return (
+      ((this.longToNumber(value) - Xoshiro256starstar.MIN) / (Xoshiro256starstar.MAX - Xoshiro256starstar.MIN)) *
+        (max - min) +
+      min
     );
   }
 
