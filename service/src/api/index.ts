@@ -84,7 +84,7 @@ const getResult = async (req: Request, res: Response): Promise<void> => {
 
     // this will later be done by the external service
     // providing serverSeed and nonce
-    user.serverSeed = generateServerSeed();
+    // user.serverSeed = generateServerSeed();
     user.results.push(result);
     // //
   } catch (err) {

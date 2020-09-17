@@ -24,6 +24,6 @@ for (let i = 0; i < count; i++) {
   num = (rng.next() + 2147483648).toString();
   num = "          ".slice(0, 10 - num.length) + num;
   process.stdout.write(num + "\n");
-  user.serverSeed = generateServerSeed();
+  // user.serverSeed = generateServerSeed();
   user.nonce = user.nonce + 1;
 }
