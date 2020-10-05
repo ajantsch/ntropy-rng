@@ -115,7 +115,6 @@ export default class Xoshiro256starstar implements RandomNumberGenerator {
     });
     const seeds: [Long, Long, Long, Long] = [Long.ZERO, Long.ZERO, Long.ZERO, Long.ZERO];
     splitHash.forEach((str, i) => {
-      console.warn(this.mash(str));
       seeds[i] = Long.fromNumber(this.mash(str) * Xoshiro256starstar.MAX || 1);
     });
     return seeds;
