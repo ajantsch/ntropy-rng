@@ -16,8 +16,8 @@ type State = {
 };
 
 export default class Xoshiro256starstar implements RandomNumberGenerator {
-  private static MIN = -2147483648;
-  private static MAX = 2147483647;
+  private static MIN = Long.MIN_VALUE.shiftRight(11).toNumber();
+  private static MAX = Long.MAX_VALUE.shiftRight(11).toNumber();
 
   private state: State;
   private value: Long = Long.ZERO;
@@ -30,21 +30,16 @@ export default class Xoshiro256starstar implements RandomNumberGenerator {
     hmac.update(seed);
     const seeds = this.hashToSeeds(hmac.digest("hex"));
     this.state = {
-      s0: Long.fromValue(seeds[0]),
-      s1: Long.fromValue(seeds[1]),
-      s2: Long.fromValue(seeds[2]),
-      s3: Long.fromValue(seeds[3]),
+      s0: seeds[0],
+      s1: seeds[1],
+      s2: seeds[2],
+      s3: seeds[3],
     };
   }
 
   /**
-   * Generates a pseudo-random number between -2147483648 and 2147483647.
+   * Generates a pseudo-random number between -4503599627370496 and 4503599627370495.
    *
-   * if min and max parameters are given, a pseudo-random floating point number
-   * within this range is returned.
-   *
-   * @param min - The minimum number of the range (inclusive)
-   * @param max - The maximum number of the range (exclusive)
    * @return The generated pseudo-random number.
    */
   next = (): number => {
@@ -76,10 +71,10 @@ export default class Xoshiro256starstar implements RandomNumberGenerator {
   }
 
   private longToNumber(value: Long): number {
-    return value.high ^ value.low;
+    return value.shiftRight(11).toNumber();
   }
 
-  private map(value: Long, min = 0, max = 0): number {
+  private map(value: Long, min = 0, max = 1): number {
     if (min >= max) {
       throw new RangeError("min must be smaller than max");
     }
@@ -106,10 +101,10 @@ export default class Xoshiro256starstar implements RandomNumberGenerator {
       h -= n;
       n += h * 0x100000000; // 2^32
     }
-    return (n >>> 0) * 2.3283064365386963e-10; // 2^-32
+    return (n >> 0) * 2.3283064365386963e-10; // 2^-32
   }
 
-  private hashToSeeds(hash: string): [number, number, number, number] {
+  private hashToSeeds(hash: string): [Long, Long, Long, Long] {
     if (hash.length != 128) {
       throw Error("hash length must be 128");
     }
@@ -118,9 +113,10 @@ export default class Xoshiro256starstar implements RandomNumberGenerator {
       const startIdx = i * 32;
       splitHash[i] = hash.substr(startIdx, 64);
     });
-    const seeds: [number, number, number, number] = [0, 0, 0, 0];
+    const seeds: [Long, Long, Long, Long] = [Long.ZERO, Long.ZERO, Long.ZERO, Long.ZERO];
     splitHash.forEach((str, i) => {
-      seeds[i] = this.mash(str) * Number.MAX_SAFE_INTEGER || 1;
+      console.warn(this.mash(str));
+      seeds[i] = Long.fromNumber(this.mash(str) * Xoshiro256starstar.MAX || 1);
     });
     return seeds;
   }
