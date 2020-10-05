@@ -101,7 +101,7 @@ export default class Xoshiro256starstar implements RandomNumberGenerator {
       h -= n;
       n += h * 0x100000000; // 2^32
     }
-    return (n >> 0) * 2.3283064365386963e-10; // 2^-32
+    return (n >>> 0) * 2.3283064365386963e-10; // 2^-32
   }
 
   private hashToSeeds(hash: string): [Long, Long, Long, Long] {
@@ -115,7 +115,7 @@ export default class Xoshiro256starstar implements RandomNumberGenerator {
     });
     const seeds: [Long, Long, Long, Long] = [Long.ZERO, Long.ZERO, Long.ZERO, Long.ZERO];
     splitHash.forEach((str, i) => {
-      seeds[i] = Long.fromNumber(this.mash(str) * Xoshiro256starstar.MAX || 1);
+      seeds[i] = Long.fromNumber(this.mash(str) * (Xoshiro256starstar.MAX - Xoshiro256starstar.MIN) || 1);
     });
     return seeds;
   }
