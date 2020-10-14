@@ -22,13 +22,10 @@ export default class Xoshiro256starstar implements RandomNumberGenerator {
   private state: State;
   private value: Long = Long.ZERO;
 
-  private outputHash: crypto.Hash;
-
   constructor(seed: string, secret: string) {
     if (secret.length != 512) {
       throw new Error("secret must be of length 512");
     }
-    this.outputHash = crypto.createHash("sha1");
     const hmac = crypto.createHmac("sha512", secret);
     hmac.update(seed);
     const seeds = this.hashToSeeds(hmac.digest("hex"));
@@ -135,8 +132,9 @@ export default class Xoshiro256starstar implements RandomNumberGenerator {
     this.state.s2 = this.state.s2.xor(t);
     this.state.s3 = this.state.s3.rotateLeft(45);
 
-    this.outputHash.update(r.toString());
+    const outputHash = crypto.createHash("sha1");
+    outputHash.update(r.toString());
 
-    return Long.fromBytes(Array.from(new Uint8Array(this.outputHash.digest())));
+    return Long.fromBytes(Array.from(new Uint8Array(outputHash.digest())));
   }
 }
