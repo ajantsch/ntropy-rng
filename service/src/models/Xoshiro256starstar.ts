@@ -132,9 +132,10 @@ export default class Xoshiro256starstar implements RandomNumberGenerator {
     this.state.s2 = this.state.s2.xor(t);
     this.state.s3 = this.state.s3.rotateLeft(45);
 
-    const outputHash = crypto.createHash("sha1");
-    outputHash.update(r.toString());
-
-    return Long.fromBytes(Array.from(new Uint8Array(outputHash.digest())));
+    const outputHash = crypto.createHash("sha1").update(r.toString());
+    const bytes = Array.from(new Uint8Array(outputHash.digest()));
+    // select 8 bytes to create new Long
+    const selectedBytes = bytes.filter((_byte, index) => index === 0 || index === 19 || index % 3 == 2);
+    return Long.fromBytes(selectedBytes);
   }
 }
